@@ -32,7 +32,15 @@ topology_template:
         region: "uksouth"
         timeout: 300
         zip_file: { get_artifact: [ SELF, get_item ] }
+      requirements:
+        - host:
+            node: AzurePlatform_0
+            relationship: con_HostedOn_0
+            capability: host
       artifacts:
         get_item:
           type: radon.artifacts.archive.Zip
           file: function.zip
+  relationship_templates:
+    con_HostedOn_0:
+      type: tosca.relationships.HostedOn
