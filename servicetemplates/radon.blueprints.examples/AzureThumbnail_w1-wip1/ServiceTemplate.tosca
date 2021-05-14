@@ -23,14 +23,14 @@ topology_template:
         displayName: "AzureFunction"
       properties:
         build_remote: true
-        runtime_version: 3
-        function_app_name: "Test"
+        runtime_version: 3.7
+        function_app_name: "shreshthtuliapp"
+        storage_account_name: "shreshthtuli"
         os_type: "Linux"
         functions_version: 3
-        name: "AzureFunction"
-        functions_version: 3
         runtime_type: "Python"
-        resource_group_name: "performanceEngineering"
+        name: "AzureFunction"
+        resource_group_name: "vm1_group"
         region: "uksouth"
         zip_file: { get_artifact: [ SELF, get_item ] }
         timeout: 300

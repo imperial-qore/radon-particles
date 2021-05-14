@@ -2,6 +2,15 @@
 - hosts: all
   gather_facts: false
   tasks:
+    - name: Create a new Storage Account on Azure portal
+      shell: "az storage account create
+              --name {{ storage_account_name }}
+              --resource-group {{ resource_group_name }}
+              --access-tier Hot
+              --kind StorageV2
+              --location {{ region }}
+              --sku Standard_RAGRS"
+              
     - name: Create a new Azure function app
       shell: "az functionapp create \
             --name {{ function_app_name }} \
