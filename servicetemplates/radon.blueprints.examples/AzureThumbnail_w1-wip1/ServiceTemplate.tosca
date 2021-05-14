@@ -28,7 +28,9 @@ topology_template:
         os_type: "Linux"
         functions_version: 3
         name: "AzureFunction"
-        resource_group_name: "vm1_group"
+        functions_version: 3
+        runtime_type: "Python"
+        resource_group_name: "performanceEngineering"
         region: "uksouth"
         zip_file: { get_artifact: [ SELF, get_item ] }
         timeout: 300
