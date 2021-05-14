@@ -1,0 +1,38 @@
+tosca_definitions_version: tosca_simple_yaml_1_3
+
+metadata:
+  targetNamespace: "radon.blueprints.examples"
+topology_template:
+  node_templates:
+    AzurePlatform_0:
+      type: radon.nodes.azure.AzurePlatform
+      metadata:
+        x: "918"
+        y: "406"
+        displayName: "AzurePlatform"
+      properties:
+        name: "AzurePlatform"
+        region: "uksouth"
+        username: ""
+        password: ""
+    AzureFunction_1:
+      type: radon.nodes.azure.AzureFunction
+      metadata:
+        x: "927"
+        y: "300"
+        displayName: "AzureFunction"
+      properties:
+        build_remote: true
+        runtime_version: 3
+        function_app_name: "Test"
+        os_type: "Linux"
+        functions_version: 3
+        name: "AzureFunction"
+        resource_group_name: "performanceEngineering"
+        region: "uksouth"
+        timeout: 300
+        zip_file: { get_artifact: [ SELF, get_item ] }
+      artifacts:
+        get_item:
+          type: radon.artifacts.archive.Zip
+          file: function.zip
