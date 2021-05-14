@@ -11,15 +11,15 @@ topology_template:
         y: "406"
         displayName: "AzurePlatform"
       properties:
+        password: "password"
         name: "AzurePlatform"
         region: "uksouth"
-        username: ""
-        password: ""
+        username: "st220@ic.ac.uk"
     AzureFunction_1:
       type: radon.nodes.azure.AzureFunction
       metadata:
-        x: "927"
-        y: "300"
+        x: "919"
+        y: "285"
         displayName: "AzureFunction"
       properties:
         build_remote: true
@@ -28,10 +28,10 @@ topology_template:
         os_type: "Linux"
         functions_version: 3
         name: "AzureFunction"
-        resource_group_name: "performanceEngineering"
+        resource_group_name: "vm1_group"
         region: "uksouth"
-        timeout: 300
         zip_file: { get_artifact: [ SELF, get_item ] }
+        timeout: 300
       requirements:
         - host:
             node: AzurePlatform_0
