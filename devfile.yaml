@@ -1,0 +1,256 @@
+---
+apiVersion: 1.0.0
+metadata:
+  generateName: radon-workspace-
+projects:
+  - name: radon-particles
+    source:
+      location: 'https://github.com/imperial-qore/radon-particles'
+      type: git
+components:
+  - type: cheEditor
+    reference: 'https://raw.githubusercontent.com/OpenTOSCA/che-winery-extension/master/deploy/che-theia.yaml'
+    alias: theia-editor
+  - endpoints:
+      - name: radon-gmt
+        port: 8080
+        attributes:
+          protocol: http
+          public: 'true'
+          discoverable: 'false'
+          secure: 'false'
+    referenceContent: |
+      ---
+       apiVersion: v1
+       kind: PersistentVolumeClaim
+       metadata:
+         name: projects
+       spec:
+         storageClassName: manual
+         accessModes:
+           - ReadWriteOnce
+         resources:
+           requests:
+             storage: 1Gi
+      ---
+       apiVersion: apps/v1
+       kind: Deployment
+       metadata:
+         name: winery-deployment
+         labels:
+           app: winery
+           tier: frontend
+       spec:
+         replicas: 1
+         selector:
+           matchLabels:
+             app: winery
+             tier: frontend
+         template:
+           metadata:
+             labels:
+               app: winery
+               tier: frontend
+           spec:
+             volumes:
+               - name: projects-storage
+                 persistentVolumeClaim:
+                   claimName: projects
+             containers:
+               - name: winery
+                 image: opentosca/radon-gmt:latest
+                 imagePullPolicy: Always
+                 ports:
+                   - containerPort: 8080
+                 env:
+                   - name: WINERY_FEATURE_RADON
+                     value: "true"
+                   - name: WINERY_REPOSITORY_PROVIDER
+                     value: "yaml"
+                   - name: WINERY_REPOSITORY_URL
+                     value: "https://github.com/radon-h2020/radon-particles"
+                   - name: WINERY_REPOSITORY_PATH
+                     value: "/projects/radon-particles"
+                   - name: WINERY_CSAR_OUTPUT_PATH
+                     value: "/projects/radon-csars"
+                 volumeMounts:
+                   - mountPath: "/projects"
+                     name: projects-storage
+    type: kubernetes
+    alias: radon-gmt
+  - endpoints:
+      - name: radon-vt
+        port: 5000
+        attributes:
+          protocol: http
+          public: 'true'
+          discoverable: 'false'
+          secure: 'false'
+    referenceContent: |
+      ---
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: vt-deployment
+        labels:
+          app: vt
+          tier: frontend
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: vt
+            tier: frontend
+        template:
+          metadata:
+            labels:
+              app: vt
+              tier: frontend
+          spec:
+            volumes:
+              - name: projects-storage-vt
+                persistentVolumeClaim:
+                  claimName: projects
+            containers:
+              - name: vt
+                image: marklawimperial/verification-tool:latest
+                imagePullPolicy: Always
+                ports:
+                  - containerPort: 5000
+                volumeMounts:
+                  - mountPath: "/projects"
+                    name: projects-storage-vt
+    type: kubernetes
+    alias: radon-vt
+  - endpoints:
+      - name: radon-ctt
+        port: 18080
+        attributes:
+          protocol: http
+          public: 'true'
+          discoverable: 'false'
+          secure: 'false'
+    referenceContent: |
+      ---
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: ctt-deployment
+        labels:
+          app: ctt
+          tier: frontend
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: ctt
+            tier: frontend
+        template:
+          metadata:
+            labels:
+              app: ctt
+              tier: frontend
+          spec:
+            volumes:
+              - name: projects-storage-ctt
+                persistentVolumeClaim:
+                  claimName: projects
+            containers:
+              - name: ctt
+                image: radonconsortium/radon-ctt:che
+                imagePullPolicy: Always
+                ports:
+                  - containerPort: 18080
+                env:
+                  - name: OPERA_SSH_USER
+                    value: "ubuntu"
+                  - name: OPERA_SSH_IDENTITY_FILE
+                    value: "/tmp/aws-ec2"
+                  - name: AWS_ACCESS_KEY_ID
+                    value: ""
+                  - name: AWS_SECRET_ACCESS_KEY
+                    value: ""
+                  - name: SSH_PRIV_KEY
+                    value: >
+                      EC2_SSH_PRIVATE_KEY_WITHOUT_HEADER_AND_FOOTER
+                volumeMounts:
+                  - mountPath: "/projects"
+                    name: projects-storage-ctt
+    type: kubernetes
+    alias: radon-ctt   
+  - endpoints:
+      - name: radon-datapp
+        port: 8083
+        attributes:
+          protocol: http
+          public: 'true'
+          discoverable: 'false'
+          secure: 'false'
+    referenceContent: |
+      ---
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: datapp-deploy
+        labels:
+          app: datapp
+          tier: frontend
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: datapp
+            tier: frontend
+        template:
+          metadata:
+            labels:
+              app: datapp
+              tier: frontend
+          spec:
+            containers:
+              - name: datapp
+                image: pjakovits/datapipeline-plugin:che
+                imagePullPolicy: Always
+                ports:
+                  - containerPort: 8083
+    type: kubernetes
+    alias: radon-datapp
+  - type: chePlugin
+    reference: >-
+      https://raw.githubusercontent.com/radon-h2020/radon-plugin-registry/master/radon/radon-vt/latest/meta.yaml
+    alias: radon-vt-chePlugin
+  - type: chePlugin
+    reference: >-
+      https://raw.githubusercontent.com/radon-h2020/radon-plugin-registry/master/radon/radon-decomposition/latest/meta.yaml
+    alias: radon-dt
+  - type: chePlugin
+    reference: >-
+      https://raw.githubusercontent.com/radon-h2020/radon-plugin-registry/master/radon/radon-defect-predictor/latest/meta.yaml
+    alias: radon-dpt
+  - type: chePlugin
+    reference: >-
+      https://raw.githubusercontent.com/radon-h2020/radon-plugin-registry/master/radon/radon-menu/latest/meta.yaml
+    alias: radon-menu
+  - type: chePlugin
+    reference: >-
+      https://raw.githubusercontent.com/radon-h2020/radon-plugin-registry/master/radon/radon-xopera-saas/latest/meta.yaml
+    alias: radon-xopera-saas
+  - type: chePlugin
+    reference: >-
+      https://raw.githubusercontent.com/radon-h2020/radon-plugin-registry/master/radon/radon-template-library/latest/meta.yaml
+    alias: radon-template-library-plugin
+  - type: chePlugin
+    reference: >-
+      https://raw.githubusercontent.com/radon-h2020/radon-plugin-registry/master/radon/radon-ctt/latest/meta.yaml
+  - type: chePlugin
+    reference: >-
+      https://raw.githubusercontent.com/radon-h2020/radon-plugin-registry/master/radon/radon-datapipeline-plugin/latest/meta.yaml
+    alias: radon-datapipeline-plugin
+  - type: chePlugin
+    reference: >-
+      https://raw.githubusercontent.com/radon-h2020/radon-plugin-registry/master/radon/radon-tosca-yaml/latest/meta.yaml
+    alias: radon-tosca-yaml
+  - type: chePlugin
+    reference: >-
+      https://raw.githubusercontent.com/radon-h2020/radon-plugin-registry/master/radon/radon-cicd-plugin/latest/meta.yaml
+    alias: radon-cicd-plugin
