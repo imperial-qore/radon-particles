@@ -15,7 +15,7 @@
     - name: Install Azure CLI from PyPI
       pip:
         name: azure-cli
-        extra_args: "{{ pip_args }}"
 
     - name: Login to Microsoft Azure platform via Azure CLI
       shell: "az login --username {{ username }} --password {{ password }}"
+      

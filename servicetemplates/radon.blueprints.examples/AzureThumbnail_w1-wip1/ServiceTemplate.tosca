@@ -15,7 +15,7 @@ topology_template:
         name: "AzurePlatform"
         region: "uksouth"
         username: "st220@ic.ac.uk"
-    AzureFunction_1:
+    AzureFunction:
       type: radon.nodes.azure.AzureFunction
       metadata:
         x: "919"
@@ -24,15 +24,15 @@ topology_template:
       properties:
         build_remote: true
         runtime_version: 3.7
-        function_app_name: "shreshthtuliapp"
         storage_account_name: "shreshthtuli"
+        function_app_name: "shreshthtuliapp"
         os_type: "Linux"
         functions_version: 3
-        runtime_type: "Python"
         name: "AzureFunction"
         resource_group_name: "vm1_group"
         region: "uksouth"
-        zip_file: { get_artifact: [ SELF, get_item ] }
+        zip_file: { get_artifact: [ SELF, function ] }
+        runtime_type: "Python"
         timeout: 300
       requirements:
         - host:
@@ -40,7 +40,7 @@ topology_template:
             relationship: con_HostedOn_0
             capability: host
       artifacts:
-        get_item:
+        function:
           type: radon.artifacts.archive.Zip
           file: function.zip
   relationship_templates:
