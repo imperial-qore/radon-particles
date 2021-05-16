@@ -68,7 +68,7 @@ components:
                    - name: WINERY_REPOSITORY_PROVIDER
                      value: "yaml"
                    - name: WINERY_REPOSITORY_URL
-                     value: "https://github.com/radon-h2020/radon-particles"
+                     value: "https://github.com/imperial-qore/radon-particles"
                    - name: WINERY_REPOSITORY_PATH
                      value: "/projects/radon-particles"
                    - name: WINERY_CSAR_OUTPUT_PATH
